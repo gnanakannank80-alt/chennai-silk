@@ -65,21 +65,7 @@ header .cart-icon {
     transition: transform 0.3s, background-color 0.3s;
 }
 
-header .cart-icon:hover {
-    background-color: #800000;
-    transform: scale(1.05);
-}
-header #cart-count {
-    background-color: #fff;
-    color: #b22222;
-    padding: 2px 8px;
-    border-radius: 50%;
-    margin: 0 5px;
-    font-size: 14px;
-}
-header #cart-total {
-    font-weight: bold;
-}
+
 
 
 
@@ -315,6 +301,7 @@ footer a {
 footer a:hover {
     text-decoration: underline;
 }
+
 
 
 
