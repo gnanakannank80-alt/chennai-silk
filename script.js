@@ -29,74 +29,85 @@ products.forEach(product => {
 });
 
 // Cart functionality
+// =======================
+// CART VARIABLES
+// =======================
 let cart = [];
+let totalAmount = 0;
 
-function addToCart(id) {
-    const product = products.find(p => p.id === id);
-    const cartItem = cart.find(item => item.id === id);
-    if(cartItem){
-        cartItem.quantity += 1;
-    } else {
-        cart.push({...product, quantity:1});
-    }
-    updateCartCount();
-}
+// =======================
+// DISPLAY MENU
+// =======================
+const menuItemsContainer = document.getElementById('menu-items');
 
-function updateCartCount() {
-    document.getElementById("cart-count").innerText = cart.reduce((acc, item) => acc + item.quantity, 0);
-}
-
-document.getElementById("cart-btn").addEventListener("click", () => {
-    document.getElementById("cart").style.display = "block";
-    renderCartItems();
-});
-
-function closeCart() {
-    document.getElementById("cart").style.display = "none";
-}
-
-function renderCartItems() {
-    const cartItems = document.getElementById("cart-items");
-    cartItems.innerHTML = "";
-    let total = 0;
-    cart.forEach(item => {
-        const div = document.createElement("div");
-        div.className = "cart-item";
+function displayMenu(items) {
+    menuItemsContainer.innerHTML = "";
+    items.forEach(item => {
+        const div = document.createElement('div');
+        div.className = "menu-item";
         div.innerHTML = `
-            <p>${item.name} x ${item.quantity} - ₹${item.price * item.quantity}</p>
-            <button onclick="removeFromCart(${item.id})">Remove</button>
+            <img src="${item.img}" alt="${item.name}">
+            <h3>${item.name}</h3>
+            <p>Price: <span>₹${item.price}</span></p>
+            <button onclick="addToCart(${item.id})">Add to Cart</button>
         `;
-        cartItems.appendChild(div);
-        total += item.price * item.quantity;
+        menuItemsContainer.appendChild(div);
     });
-    document.getElementById("total-price").innerText = total;
 }
 
-function removeFromCart(id){
-    cart = cart.filter(item => item.id !== id);
-    updateCartCount();
-    renderCartItems();
-}
+// Initially display all menu items
+displayMenu(menuData);
 
-function checkout(){
-    if(cart.length === 0){
-        alert("Cart is empty!");
-        return;
+// =======================
+// FILTER MENU
+// =======================
+function filterMenu(category){
+    if(category === 'all') {
+        displayMenu(menuData);
+    } else {
+        const filtered = menuData.filter(item => item.category === category);
+        displayMenu(filtered);
     }
-    alert("Thank you for your purchase!");
-    cart = [];
-    updateCartCount();
-    renderCartItems();
-    closeCart();
 }
 
-// Contact Form
-document.getElementById("contact-form").addEventListener("submit", function(e){
-    e.preventDefault();
-    const name = document.getElementById("name").value;
-    const email = document.getElementById("email").value;
-    const message = document.getElementById("message").value;
-    alert(`Thank you ${name}! Your message has been received.`);
-    this.reset();
-});
+// =======================
+// ADD TO CART FUNCTION
+// =======================
+function addToCart(id){
+    const item = menuData.find(i => i.id === id);
+    cart.push(item);
 
+    // Update cart count
+    document.getElementById('cart-count').innerText = cart.length;
+
+    // Update total amount
+    totalAmount += item.price;
+    document.getElementById('cart-total').innerText = totalAmount;
+
+    alert(`${item.name} added to cart! Total: ₹${totalAmount}`);
+}
+
+// =======================
+// ORDER FORM
+// =======================
+document.getElementById('order-form').addEventListener('submit', function(e){
+    e.preventDefault();
+    const name = document.getElementById('name').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const details = document.getElementById('details').value.trim();
+
+    if(name && phone && details){
+        // Show order summary
+        let summary = `Thank you ${name}!\nYour order has been received.\nTotal Amount: ₹${totalAmount}\n\nOrder Details:\n${details}`;
+        alert(summary);
+
+        // Reset form and cart
+        this.reset();
+        cart = [];
+        totalAmount = 0;
+        document.getElementById('cart-count').innerText = 0;
+        document.getElementById('cart-total').innerText = 0;
+    } else {
+        alert("Please fill all the fields!");
+    }
+});
